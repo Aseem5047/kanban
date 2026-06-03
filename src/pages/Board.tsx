@@ -88,15 +88,8 @@ const Board = () => {
     }
 
     /* -----------------------------
-       Clear filters
+        LOADING STATE
     ------------------------------ */
-    const clearFilters = () => {
-        useTaskStore.getState().clearFilters()
-    }
-
-    /* -----------------------------
-   LOADING STATE
------------------------------- */
     if (isLoading) {
         return (
             <div className="flex h-screen flex-col">

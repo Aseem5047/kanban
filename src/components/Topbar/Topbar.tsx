@@ -10,6 +10,7 @@ import {
 import type {
     Priority,
 } from '../../types/data.types'
+import { useDebounce } from '../../hooks/useDebounce'
 
 const priorities: Priority[] = [
     'low',
@@ -63,20 +64,18 @@ const TopBar = () => {
         filters.search
     )
 
-    useEffect(() => {
-        const timeout =
-            setTimeout(() => {
-                setSearch(
-                    searchInput
-                )
-            }, 300)
+    const debouncedSearch =
+        useDebounce(
+            searchInput,
+            300
+        )
 
-        return () =>
-            clearTimeout(
-                timeout
-            )
+    useEffect(() => {
+        setSearch(
+            debouncedSearch
+        )
     }, [
-        searchInput,
+        debouncedSearch,
         setSearch,
     ])
 
