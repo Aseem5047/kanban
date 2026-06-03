@@ -17,7 +17,7 @@ export type Task = {
     assigneeId: string | null
     tagId: string | null
 
-    expirationDate: Date
+    expirationDate?: Date | null
     points?: number
 }
 

@@ -34,6 +34,11 @@ type TaskStore = {
     assignees: Assignee[]
     tags: Tag[]
 
+    selectedTaskId: string | null
+
+    openTask: (id: string) => void
+    closeTask: () => void
+
     addAssignee: (name: string) => void
     addTag: (name: string, color: string) => void
 
@@ -85,6 +90,8 @@ export const useTaskStore = create<TaskStore>()(
 
             assignees: defaultAssignees,
             tags: defaultTags,
+
+            selectedTaskId: null,
 
             filters: defaultFilters,
 
@@ -182,6 +189,10 @@ export const useTaskStore = create<TaskStore>()(
                     tasks: state.tasks.filter(
                         (t) => t.id !== id
                     ),
+                    selectedTaskId:
+                        state.selectedTaskId === id
+                            ? null
+                            : state.selectedTaskId,
                 }))
             },
 
@@ -229,6 +240,22 @@ export const useTaskStore = create<TaskStore>()(
 
             clearFilters: () =>
                 set({ filters: defaultFilters }),
+
+            /* -------------------------
+                TASK DRAWER
+            -------------------------- */
+
+            openTask: (id) => {
+                set({
+                    selectedTaskId: id,
+                })
+            },
+
+            closeTask: () => {
+                set({
+                    selectedTaskId: null,
+                })
+            },
         }),
         {
             name: 'task-store',

@@ -6,6 +6,7 @@ import { buildColumns } from '../utils/task.utils'
 import TaskColumn from '../components/TaskColumn/TaskColumn'
 import type { Status } from '../types/data.types'
 import TopBar from '../components/Topbar/Topbar'
+import TaskDrawer from '../components/TaskDrawer/TaskDrawer'
 
 const Board = () => {
     const tasks = useTaskStore((state) => state.tasks)
@@ -134,7 +135,7 @@ const Board = () => {
         <div className="flex h-screen flex-col">
             <TopBar />
 
-            <div className="flex h-screen gap-4 p-4">
+            <div className="flex flex-1 gap-4 p-4">
                 {columns.map((column) => (
                     <TaskColumn
                         key={column.status}
@@ -148,6 +149,8 @@ const Board = () => {
                     />
                 ))}
             </div>
+
+            <TaskDrawer />
         </div>
     )
 }

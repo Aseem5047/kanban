@@ -1,3 +1,25 @@
 {
-  "tasks": []
+  "tasks": [
+    {
+      "id": "UqvdY-Tz244",
+      "title": "New Task",
+      "status": "in-progress",
+      "priority": "low",
+      "points": 0,
+      "assigneeId": "a1",
+      "tagId": "t1",
+      "expirationDate": "2026-06-04T00:00:00.000Z"
+    },
+    {
+      "id": "PHaDKKw0HaI",
+      "title": "New Task",
+      "status": "in-progress",
+      "priority": "medium",
+      "points": 0,
+      "assigneeId": null,
+      "tagId": null,
+      "expirationDate": null
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
 }

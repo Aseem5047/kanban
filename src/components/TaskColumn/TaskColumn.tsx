@@ -33,10 +33,10 @@ const TaskColumn = ({
             status,
             priority: 'medium',
             points: 0,
-            assigneeId: '',
-            tagId: '',
-            expirationDate: new Date()
-        })
+            assigneeId: null,
+            tagId: null,
+            expirationDate: null
+        });
     }
 
     return (
