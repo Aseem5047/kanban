@@ -1,19 +1,9 @@
 {
   "tasks": [
     {
-      "id": "UqvdY-Tz244",
+      "id": "M3Jl5ePyfBQ",
       "title": "New Task",
-      "status": "in-progress",
-      "priority": "low",
-      "points": 0,
-      "assigneeId": "a1",
-      "tagId": "t1",
-      "expirationDate": "2026-06-04T00:00:00.000Z"
-    },
-    {
-      "id": "PHaDKKw0HaI",
-      "title": "New Task",
-      "status": "in-progress",
+      "status": "in_progress",
       "priority": "medium",
       "points": 0,
       "assigneeId": null,

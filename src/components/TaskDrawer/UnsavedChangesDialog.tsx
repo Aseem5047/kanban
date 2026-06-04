@@ -18,7 +18,7 @@ const UnsavedChangesDialog = ({
                     fixed
                     inset-0
                     bg-black/40
-                    z-[60]
+                    z-60
                 "
             />
 
@@ -27,7 +27,7 @@ const UnsavedChangesDialog = ({
                     fixed
                     top-1/2
                     left-1/2
-                    z-[61]
+                    z-61
                     w-[400px]
                     -translate-x-1/2
                     -translate-y-1/2
@@ -49,8 +49,9 @@ const UnsavedChangesDialog = ({
                     <button
                         onClick={onCancel}
                         className="
-                            rounded
+                            rounded-xl
                             border
+                            border-gray-200
                             px-4
                             py-2
                         "
@@ -61,7 +62,7 @@ const UnsavedChangesDialog = ({
                     <button
                         onClick={onDiscard}
                         className="
-                            rounded
+                            rounded-xl
                             bg-red-500
                             px-4
                             py-2

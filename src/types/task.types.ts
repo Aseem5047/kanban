@@ -1,6 +1,6 @@
 export type Status =
-    | 'todo'
-    | 'in-progress'
+    | 'backlog'
+    | 'in_progress'
     | 'done'
 
 export type Priority =
@@ -22,8 +22,8 @@ export type Task = {
 }
 
 export const statuses: Status[] = [
-    'todo',
-    'in-progress',
+    'backlog',
+    'in_progress',
     'done',
 ]
 
@@ -36,6 +36,7 @@ export const priorities: Priority[] = [
 export type Assignee = {
     id: string
     name: string
+    color: string
 }
 
 export type Tag = {
@@ -43,3 +44,9 @@ export type Tag = {
     name: string
     color: string
 }
+
+export const statusLabel = {
+    backlog: 'Backlog',
+    inProgress: 'In Progress',
+    done: 'Done',
+} as const

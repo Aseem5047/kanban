@@ -2,9 +2,10 @@ import { useMemo } from 'react'
 
 type AvatarProps = {
     name: string
+    color: string
 }
 
-const Avatar = ({ name }: AvatarProps) => {
+const Avatar = ({ name, color }: AvatarProps) => {
     const initials = useMemo(
         () =>
             name
@@ -25,11 +26,11 @@ const Avatar = ({ name }: AvatarProps) => {
         items-center
         justify-center
         rounded-full
-        bg-blue-500
         text-xs
         font-semibold
         text-white
       "
+            style={{ backgroundColor: color }}
         >
             {initials}
         </div>

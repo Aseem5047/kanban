@@ -98,7 +98,13 @@ const EntitySelect = ({
                     w-full
                     rounded
                     border
+                    border-gray-200
                     p-2
+                    bg-slate-50        
+                    outline-none
+                    focus:border-blue-400
+                    focus:ring-4
+                    focus:ring-blue-100
                 "
             />
 

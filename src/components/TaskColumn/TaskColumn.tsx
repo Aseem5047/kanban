@@ -1,6 +1,6 @@
 import { PlusIcon } from '@heroicons/react/20/solid'
 import { useTaskStore } from '../../stores/task.store'
-import type { Status, Task } from '../../types/data.types'
+import type { Status, Task } from '../../types/task.types'
 import TaskCard from '../TaskCard/TaskCard'
 
 type TaskColumnProps = {
@@ -14,6 +14,21 @@ type TaskColumnProps = {
     onDragEnter: (status: Status) => void
 }
 
+const statusColors = {
+    backlog: {
+        badge: 'bg-slate-500',
+        light: 'bg-slate-50',
+    },
+    'in_progress': {
+        badge: 'bg-amber-500',
+        light: 'bg-amber-50',
+    },
+    done: {
+        badge: 'bg-emerald-500',
+        light: 'bg-emerald-50',
+    },
+} as const
+
 const TaskColumn = ({
     status,
     tasks,
@@ -26,7 +41,11 @@ const TaskColumn = ({
         (state) => state.createTask
     )
 
+    const isCreating = useTaskStore((state) => state.isCreating)
+
+
     const handleAddTask = async () => {
+
         await createTask({
             id: crypto.randomUUID(),
             title: 'New Task',
@@ -35,63 +54,202 @@ const TaskColumn = ({
             points: 0,
             assigneeId: null,
             tagId: null,
-            expirationDate: null
-        });
+            expirationDate: null,
+        })
     }
+
+    const colors =
+        statusColors[
+        status.toLowerCase() as keyof typeof statusColors
+        ] ?? statusColors.backlog
 
     return (
         <div
-            className="flex flex-col gap-4 flex-1 min-w-0"
             onDrop={(e) => onDrop(e, status)}
             onDragOver={(e) => e.preventDefault()}
             onDragEnter={() => onDragEnter(status)}
+            className={`
+                flex
+                min-w-[340px]
+                h-full
+                flex-1
+                flex-col
+                rounded-3xl
+                border
+                border-slate-200
+                bg-white
+                shadow-sm
+                transition-all
+                duration-200
+                ${isHovered
+                    ? 'ring-2 ring-blue-200 shadow-lg'
+                    : ''
+                }
+            `}
         >
-            <div className="flex items-center justify-between px-2">
-                <h2 className="text-3xl font-bold capitalize text-gray-500">
-                    {status}
-                </h2>
+            {/* Header */}
 
-                <span className="text-3xl font-bold text-blue-400">
-                    {tasks.length}
-                </span>
+            <div
+                className="
+                    sticky
+                    top-0
+                    z-10
+                    rounded-t-3xl
+                    border-b
+                    border-slate-100
+                    bg-white/90
+                    px-5
+                    py-4
+                    backdrop-blur
+                "
+            >
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div
+                            className={`
+                                h-3
+                                w-3
+                                rounded-full
+                                ${colors.badge}
+                            `}
+                        />
+
+                        <h2
+                            className="
+                                text-lg
+                                font-semibold
+                                capitalize
+                                text-slate-800
+                            "
+                        >
+                            {status === "in_progress" ? "In Progress" : status}
+                        </h2>
+                    </div>
+
+                    <span
+                        className={`
+                            rounded-full
+                            px-3
+                            py-1
+                            text-sm
+                            font-semibold
+                            text-slate-700
+                            ${colors.light}
+                        `}
+                    >
+                        {tasks.length}
+                    </span>
+                </div>
             </div>
+
+            {/* Tasks Area */}
 
             <div
                 className={`
-                flex
-                flex-1
-                flex-col
-                gap-4
-                min-w-0
-                rounded-lg
-                transition-colors
-                ${isHovered ? 'bg-gray-200 p-2' : ''}
-            `}
+                    flex
+                    flex-1
+                    flex-col
+                    gap-4
+                    p-4
+                    transition-all
+                    duration-200
+                    overflow-y-auto
+                    ${isHovered
+                        ? 'bg-blue-50/50'
+                        : ''
+                    }
+                `}
             >
-                {/* -----------------------------
-                    TASKS OR EMPTY STATE
-                ------------------------------ */}
                 {tasks.length > 0 ? (
                     tasks.map((task) => (
-                        <TaskCard key={task.id} task={task} />
+                        <TaskCard
+                            key={task.id}
+                            task={task}
+                        />
                     ))
                 ) : (
-                    <div className="flex flex-1 items-center justify-center text-center p-6">
-                        <p className="text-sm text-gray-500">
-                            No tasks here. Click "Add Task" to get started.
-                        </p>
+                    <div
+                        className="
+                            flex
+                            flex-1
+                            min-h-[200px]
+                            items-center
+                            justify-center
+                            rounded-2xl
+                            border-2
+                            border-dashed
+                            border-slate-200
+                            bg-slate-50
+                            p-6
+                            text-center
+                        "
+                    >
+                        <div>
+                            <p
+                                className="
+                                    font-medium
+                                    text-slate-500
+                                "
+                            >
+                                No tasks yet
+                            </p>
+
+                            <p
+                                className="
+                                    mt-1
+                                    text-sm
+                                    text-slate-400
+                                "
+                            >
+                                Drag tasks here or create a new
+                                one
+                            </p>
+                        </div>
                     </div>
                 )}
             </div>
 
-            <button
-                onClick={handleAddTask}
-                className="mt-auto self-end rounded-full bg-blue-500 p-2.5 text-white hover:bg-blue-400 cursor-pointer"
+            {/* Footer */}
 
+            <div
+                className="
+                    border-t
+                    border-slate-100
+                    p-4
+                "
             >
-                <PlusIcon className="size-6 text-white" />
+                <button
+                    onClick={handleAddTask}
+                    disabled={isCreating}
+                    className="
+                        flex
+                        w-full
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        border
+                        border-slate-200
+                        bg-white
+                        px-4
+                        py-3
+                        text-sm
+                        font-medium
+                        text-slate-700
+                        transition-all
+                        hover:border-blue-300
+                        hover:bg-blue-50
+                        hover:text-blue-600
+                        disabled:opacity-50 
+                        disabled:cursor-not-allowed
+                    "
+                >
+                    <PlusIcon className="h-5 w-5" />
 
-            </button>
+                    {isCreating ? 'Adding...' : 'Add Task'}
+
+                </button>
+            </div>
         </div>
     )
 }

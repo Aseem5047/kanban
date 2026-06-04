@@ -1,4 +1,4 @@
-import type { Task, Priority, Status } from '../types/data.types'
+import type { Task, Priority, Status } from '../types/task.types'
 
 const BASE_URL = 'http://localhost:3000/tasks'
 

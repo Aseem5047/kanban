@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from 'react'
 
 type Props = {
     label: string
@@ -10,8 +10,27 @@ const TaskField = ({
     children,
 }: Props) => {
     return (
-        <div className="space-y-1">
-            <label className="text-sm text-gray-500">
+        <div
+            className="
+                rounded-2xl
+                border
+                border-slate-200
+                bg-white
+                p-4
+                shadow-sm
+            "
+        >
+            <label
+                className="
+                    mb-2
+                    block
+                    text-xs
+                    font-semibold
+                    uppercase
+                    tracking-wide
+                    text-slate-500
+                "
+            >
                 {label}
             </label>
 

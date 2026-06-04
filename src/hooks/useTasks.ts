@@ -4,7 +4,7 @@ import type {
     Task,
     Status,
     Priority,
-} from '../types/data.types'
+} from '../types/task.types'
 
 import {
     getTasks,
@@ -80,7 +80,6 @@ export const useTasks = () => {
 
         if (!existingTask) return
 
-        // avoid unnecessary API calls
         if (JSON.stringify(existingTask) === JSON.stringify(task)) {
             return
         }

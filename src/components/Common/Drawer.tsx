@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from 'react'
 
 type Props = {
     open: boolean
@@ -18,9 +18,11 @@ const Drawer = ({
             <div
                 onClick={onClose}
                 className="
-                    fixed inset-0
-                    bg-black/30
+                    fixed
+                    inset-0
                     z-40
+                    bg-slate-900/30
+                    backdrop-blur-sm
                 "
             />
 
@@ -29,16 +31,19 @@ const Drawer = ({
                     fixed
                     right-0
                     top-0
-                    h-screen
-                    w-[420px]
-                    bg-white
-                    shadow-xl
                     z-50
+                    h-screen
+                    w-full
+                    max-w-md
                     overflow-y-auto
-                    p-6
+                    bg-slate-50
+                    shadow-2xl
+                    rounded-l-lg
                 "
             >
-                {children}
+                <div className="p-6">
+                    {children}
+                </div>
             </div>
         </>
     )

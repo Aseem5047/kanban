@@ -4,45 +4,63 @@ import { useTaskStore } from '../stores/task.store'
 import { buildColumns } from '../utils/task.utils'
 
 import TaskColumn from '../components/TaskColumn/TaskColumn'
-import type { Status } from '../types/data.types'
+import { statusLabel, type Status } from '../types/task.types'
 import TopBar from '../components/Topbar/Topbar'
 import TaskDrawer from '../components/TaskDrawer/TaskDrawer'
+import UndoToast from '../components/UndoToast/UndoToast'
+import { useUndoStore } from '../stores/undo.store'
+import LoadingState from '../components/Common/LoadingState'
+import ErrorState from '../components/Common/ErrorState'
 
 const Board = () => {
     const tasks = useTaskStore((state) => state.tasks)
     const filters = useTaskStore((state) => state.filters)
-    const fetchTasks = useTaskStore((state) => state.fetchTasks)
-    const updateTask = useTaskStore((state) => state.updateTask)
 
-    const isLoading = useTaskStore((state) => state.isLoading)
-    const error = useTaskStore((state) => state.error)
+    const fetchTasks = useTaskStore(
+        (state) => state.fetchTasks
+    )
+
+    const updateTask = useTaskStore(
+        (state) => state.updateTask
+    )
+
+    const isFetching = useTaskStore((state) => state.isFetching)
+    const fetchError = useTaskStore((state) => state.fetchError)
 
     const [hoveredColumn, setHoveredColumn] =
         useState<Status | null>(null)
 
     /* -----------------------------
-       Fetch tasks once
+       Fetch Tasks
     ------------------------------ */
+
     useEffect(() => {
         fetchTasks()
     }, [fetchTasks])
 
+
     /* -----------------------------
-       Filtered tasks (optimized)
+       Filter Tasks
     ------------------------------ */
+
     const filteredTasks = useMemo(() => {
         return tasks.filter((task) => {
             const matchesSearch =
                 task.title
                     .toLowerCase()
-                    .includes(filters.search.toLowerCase())
+                    .includes(
+                        filters.search.toLowerCase()
+                    )
 
             const matchesPriority =
-                filters.priorities.includes(task.priority)
+                filters.priorities.includes(
+                    task.priority
+                )
 
             const matchesAssignee =
                 !filters.assignee ||
-                task.assigneeId === filters.assignee
+                task.assigneeId ===
+                filters.assignee
 
             const matchesTag =
                 !filters.tag ||
@@ -58,8 +76,9 @@ const Board = () => {
     }, [tasks, filters])
 
     /* -----------------------------
-       Columns
+       Build Columns
     ------------------------------ */
+
     const columns = useMemo(
         () => buildColumns(filteredTasks),
         [filteredTasks]
@@ -68,87 +87,128 @@ const Board = () => {
     /* -----------------------------
        Drag & Drop
     ------------------------------ */
+
     const handleDrop = (
         e: React.DragEvent<HTMLDivElement>,
         status: Status
     ) => {
         e.preventDefault()
+
         setHoveredColumn(null)
 
-        const taskId = e.dataTransfer.getData('id')
+        const taskId =
+            e.dataTransfer.getData('id')
 
-        const task = tasks.find((t) => t.id === taskId)
+        const task = tasks.find(
+            (t) => t.id === taskId
+        )
+
         if (!task) return
 
         if (task.status === status) return
+
+        const previousStatus =
+            task.status
 
         updateTask({
             ...task,
             status,
         })
+
+        useUndoStore
+            .getState()
+            .setAction({
+                type: 'move',
+                taskId: task.id,
+                from: previousStatus,
+                to: status,
+                message: `Moved to ${statusLabel[status]}. Undo?`,
+            })
     }
 
     /* -----------------------------
-        LOADING STATE
+       Loading
     ------------------------------ */
-    if (isLoading) {
+
+    if (isFetching) {
         return (
-            <div className="flex h-screen flex-col">
+            <div className="flex h-screen flex-col bg-slate-50">
                 <TopBar />
+
                 <div className="flex flex-1 items-center justify-center">
-                    <p>Loading tasks...</p>
+                    <LoadingState
+                        title="Loading Board"
+                        description="Fetching tasks and preparing your workspace..."
+                    />
                 </div>
             </div>
         )
     }
 
     /* -----------------------------
-       ERROR STATE
+       Error
     ------------------------------ */
-    if (error) {
-        return (
-            <div className="flex h-screen flex-col">
-                <TopBar />
-                <div className="flex flex-1 items-center justify-center">
-                    <div className="text-center space-y-2">
-                        <p className="text-red-500">
-                            {error}
-                        </p>
 
-                        <button
-                            onClick={fetchTasks}
-                            className="text-blue-500 hover:underline"
-                        >
-                            Retry
-                        </button>
-                    </div>
+    if (fetchError) {
+        return (
+            <div className="flex h-screen flex-col bg-slate-50">
+                <TopBar />
+
+                <div className="flex flex-1 items-center justify-center">
+                    <ErrorState
+                        title="Unable to Load Tasks"
+                        message={fetchError}
+                        onRetry={fetchTasks}
+                    />
                 </div>
             </div>
         )
     }
-
 
     /* -----------------------------
        Main UI
     ------------------------------ */
+
     return (
-        <div className="flex h-screen flex-col">
+        <div className="flex h-screen flex-col bg-slate-50">
             <TopBar />
 
-            <div className="flex flex-1 gap-4 p-4">
-                {columns.map((column) => (
-                    <TaskColumn
-                        key={column.status}
-                        status={column.status}
-                        tasks={column.tasks}
-                        isHovered={
-                            hoveredColumn === column.status
-                        }
-                        onDrop={handleDrop}
-                        onDragEnter={setHoveredColumn}
-                    />
-                ))}
-            </div>
+            <main
+                className="
+                    flex-1
+                    overflow-x-auto
+                    overflow-y-hidden
+                "
+            >
+                <div
+                    className="
+                        flex
+                        h-full
+                        min-w-max
+                        items-start
+                        gap-6
+                        p-6
+                    "
+                >
+                    {columns.map((column) => (
+                        <TaskColumn
+                            key={column.status}
+                            status={column.status}
+                            tasks={column.tasks}
+                            isHovered={
+                                hoveredColumn ===
+                                column.status
+                            }
+                            onDrop={handleDrop}
+                            onDragEnter={
+                                setHoveredColumn
+                            }
+                        />
+                    ))}
+                </div>
+            </main>
+
+            <UndoToast />
 
             <TaskDrawer />
         </div>

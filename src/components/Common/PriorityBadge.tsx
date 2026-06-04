@@ -4,7 +4,7 @@ import {
     EqualsIcon,
 } from '@heroicons/react/20/solid'
 
-import type { Task } from '../../types/data.types'
+import type { Task } from '../../types/task.types'
 
 type Props = {
     priority: Task['priority']

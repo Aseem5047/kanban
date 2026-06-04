@@ -2,7 +2,7 @@ import {
     statuses,
     type Status,
     type Task,
-} from '../types/data.types'
+} from '../types/task.types'
 
 const priorityOrder = {
     high: 0,

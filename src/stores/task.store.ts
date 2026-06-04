@@ -6,7 +6,7 @@ import type {
     Priority,
     Assignee,
     Tag,
-} from '../types/data.types'
+} from '../types/task.types'
 
 import {
     getTasks,
@@ -28,8 +28,11 @@ type Filters = {
 
 type TaskStore = {
     tasks: Task[]
-    isLoading: boolean
-    error: string | null
+    isFetching: boolean
+    fetchError: string | null
+    isCreating: boolean
+    isUpdating: boolean
+    isDeleting: boolean
 
     assignees: Assignee[]
     tags: Tag[]
@@ -39,7 +42,7 @@ type TaskStore = {
     openTask: (id: string) => void
     closeTask: () => void
 
-    addAssignee: (name: string) => void
+    addAssignee: (name: string, color: string) => void
     addTag: (name: string, color: string) => void
 
     filters: Filters
@@ -48,6 +51,7 @@ type TaskStore = {
     createTask: (task: Task) => Promise<void>
     updateTask: (task: Task) => Promise<void>
     deleteTask: (id: string) => Promise<void>
+    restoreTask: (task: Task) => Promise<void>
 
     setSearch: (search: string) => void
     togglePriority: (priority: Priority) => void
@@ -68,8 +72,8 @@ const defaultFilters: Filters = {
 }
 
 const defaultAssignees: Assignee[] = [
-    { id: 'a1', name: 'John Doe' },
-    { id: 'a2', name: 'Jane Smith' },
+    { id: 'a1', name: 'John Doe', color: '#3b82f6' },
+    { id: 'a2', name: 'Jane Smith', color: '#22c55e' },
 ]
 
 const defaultTags: Tag[] = [
@@ -85,8 +89,12 @@ export const useTaskStore = create<TaskStore>()(
     persist(
         (set, get) => ({
             tasks: [],
-            isLoading: false,
-            error: null,
+            isFetching: false,
+            fetchError: null,
+            isCreating: false,
+            isUpdating: false,
+            isDeleting: false,
+
 
             assignees: defaultAssignees,
             tags: defaultTags,
@@ -99,10 +107,11 @@ export const useTaskStore = create<TaskStore>()(
                ASSIGNEES
             -------------------------- */
 
-            addAssignee: (name) => {
+            addAssignee: (name, color) => {
                 const newAssignee: Assignee = {
                     id: crypto.randomUUID(),
                     name,
+                    color
                 }
 
                 set((state) => ({
@@ -131,68 +140,56 @@ export const useTaskStore = create<TaskStore>()(
             -------------------------- */
 
             fetchTasks: async () => {
-                if (get().tasks.length) return
-
                 try {
-                    set({ isLoading: true, error: null })
-
+                    set({ isFetching: true, fetchError: null })
                     const tasks = await getTasks()
-
-                    set({
-                        tasks,
-                        isLoading: false,
-                    })
+                    set({ tasks, isFetching: false })
                 } catch (error) {
                     set({
-                        error:
-                            error instanceof Error
-                                ? error.message
-                                : 'Failed to load tasks',
-                        isLoading: false,
+                        fetchError: error instanceof Error ? error.message : 'Failed to load tasks',
+                        isFetching: false,
                     })
                 }
             },
 
             createTask: async (task) => {
+                set({ isCreating: true })
                 const created = await createTaskService(task)
-
-                set((state) => ({
-                    tasks: [...state.tasks, created],
-                }))
+                set((state) => ({ tasks: [...state.tasks, created], isCreating: false }))
             },
 
             updateTask: async (task) => {
-                const existing = get().tasks.find(
-                    (t) => t.id === task.id
-                )
-
+                const existing = get().tasks.find((t) => t.id === task.id)
                 if (!existing) return
-
-                if (
-                    JSON.stringify(existing) ===
-                    JSON.stringify(task)
-                ) return
-
+                if (JSON.stringify(existing) === JSON.stringify(task)) return
+                set({ isUpdating: true })
                 await updateTaskById(task)
-
                 set((state) => ({
-                    tasks: state.tasks.map((t) =>
-                        t.id === task.id ? task : t
-                    ),
+                    tasks: state.tasks.map((t) => t.id === task.id ? task : t),
+                    isUpdating: false,
                 }))
             },
 
             deleteTask: async (id) => {
+                set({ isDeleting: true })
                 await deleteTaskById(id)
+                set((state) => ({
+                    tasks: state.tasks.filter((t) => t.id !== id),
+                    isDeleting: false,
+                    selectedTaskId: state.selectedTaskId === id ? null : state.selectedTaskId,
+                }))
+            },
+
+            restoreTask: async (
+                task: Task
+            ) => {
+                await createTaskService(task)
 
                 set((state) => ({
-                    tasks: state.tasks.filter(
-                        (t) => t.id !== id
-                    ),
-                    selectedTaskId:
-                        state.selectedTaskId === id
-                            ? null
-                            : state.selectedTaskId,
+                    tasks: [
+                        ...state.tasks,
+                        task,
+                    ],
                 }))
             },
 
@@ -259,6 +256,11 @@ export const useTaskStore = create<TaskStore>()(
         }),
         {
             name: 'task-store',
+            partialize: (state) => ({
+                assignees: state.assignees,
+                tags: state.tags,
+                filters: state.filters,
+            }),
         }
     )
 )
