@@ -1,15 +1,3 @@
 {
-  "tasks": [
-    {
-      "id": "M3Jl5ePyfBQ",
-      "title": "New Task",
-      "status": "in_progress",
-      "priority": "medium",
-      "points": 0,
-      "assigneeId": null,
-      "tagId": null,
-      "expirationDate": null
-    }
-  ],
-  "$schema": "./node_modules/json-server/schema.json"
+  "tasks": []
 }
