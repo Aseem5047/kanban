@@ -95,7 +95,7 @@ src/
 
 ## Features
 
-- **Kanban columns** — Backlog, In Progress, Done
+- **Kanban columns** — Backlog (To-do), In Progress, Done
 - **Drag and drop** — Move tasks between columns
 - **Task drawer** — Edit title, status, priority, assignee, tag, due date, and story points
 - **Inline delete confirmation** — On both task cards and the drawer
