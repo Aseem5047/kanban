@@ -209,7 +209,6 @@ const Board = () => {
             </main>
 
             <UndoToast />
-
             <TaskDrawer />
         </div>
     )
