@@ -58,7 +58,7 @@ const TaskCard = ({ task }: Props) => {
             className="
                 group
                 relative
-                min-h-[180px]
+                min-h-45
                 cursor-pointer
                 overflow-hidden
                 rounded-2xl

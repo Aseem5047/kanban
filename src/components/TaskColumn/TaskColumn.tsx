@@ -70,7 +70,7 @@ const TaskColumn = ({
             onDragEnter={() => onDragEnter(status)}
             className={`
                 flex
-                min-w-[340px]
+                min-w-85
                 h-full
                 flex-1
                 flex-col
