@@ -208,7 +208,10 @@ const Board = () => {
                 </div>
             </main>
 
+            {/* Undo Toast */}
             <UndoToast />
+
+            {/* Task Drawer */}
             <TaskDrawer />
         </div>
     )
